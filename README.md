@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 ## Data
 
-> please download the data from this link https://zenodo.org/record/4024676#.Y49odS8RpQI](https://zenodo.org/records/10658626, move downloaded folders into project_path/Data/CroppedRegions directory.
+> please download the data from this link https://zenodo.org/records/10658626, move downloaded folders into project_path/Data/CroppedRegions directory.
 
 
 ## Train and test prognosis model
