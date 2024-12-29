@@ -16,7 +16,7 @@ from dataset.dataset import Dataset, custom_collate_fn, worker_init_fn
 parser = argparse.ArgumentParser(description='Train a CNN to classify image patches')
 
 parser.add_argument('--init_model_file', default='Results/prognosis_model/saved_models/model_weights__2024_08_19__17_31_46__369.pth',help='Initial model file (optional)', dest='init_model_file')
-parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg13/test.txt', help='slide list test', dest='slide_list_filename')
+parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg/test.txt', help='slide list test', dest='slide_list_filename')
 parser.add_argument('--patch_size', default='512', type=int, help='Patch size', dest='patch_size')
 parser.add_argument('--num_instances', default='0', type=int, help='number of instances (patches) in a bag', dest='num_instances')
 parser.add_argument('--num_bags', default='100', type=int, help='number of instances (patches) in a bag', dest='num_bags')
@@ -26,7 +26,6 @@ parser.add_argument('--batch_size', default='1', type=int, help='Batch size', de
 parser.add_argument('--metrics_dir', default='Results/prognosis_model/test_metrics/', help='Text file to write metrics', dest='metrics_dir')
 parser.add_argument('--cz_imgs_list', default='prognosis_model/data/cz_img_list.txt', help='Image directory', dest='cz_imgs_list')
 parser.add_argument('--he_imgs_list', default='prognosis_model/data/he_img_list.txt', help='Image directory', dest='he_imgs_list')
-parser.add_argument('--seg_imgs_list', default='prognosis_model/Data/seg_img_list.txt', help='Image directory', dest='seg_imgs_list')
 parser.add_argument('--imgs_type', default='CZ_HE', help='Image directory', dest='imgs_type')
 
 FLAGS = parser.parse_args()

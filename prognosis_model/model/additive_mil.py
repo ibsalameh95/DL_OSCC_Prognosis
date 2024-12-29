@@ -43,8 +43,6 @@ class AdditiveClassifier(torch.nn.Module):
                 layers.append(self.hidden_activation)
                 layers.append(self.drop_out)
         model = torch.nn.Sequential(*layers)
-        print(model)
-        input('additive_mil')
         return model
 
     def forward(self, features, attention):

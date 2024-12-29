@@ -57,8 +57,7 @@ class DefaultAttentionModule(torch.nn.Module):
                 layers.append(self.hidden_activation)
                 layers.append(self.drop_out)
         model = nn.Sequential(*layers)
-        print(model)
-        input('attention_mil')
+
         return model
 
     def forward(self, features, bag_size):
@@ -87,9 +86,7 @@ class DefaultMILGraph(torch.nn.Module):
         shape = [-1] + list(images.shape[1:])  # merge batch and bag dim
         images = images.view(shape)
         features = self.featurizer(images)
-        print(features.shape)
         attention = self.pointer(features, bag_size)
-        print(attention.shape)
         if not torch.all(attention >= 0):
             raise ValueError("{}: Attention weights cannot be negative".format(attention))
 
@@ -100,10 +97,8 @@ class DefaultMILGraph(torch.nn.Module):
 
         classifier_out_dict = self.classifier(features, attention)
         bag_logits = classifier_out_dict['logits']
-        print(bag_logits)
         patch_logits = classifier_out_dict['patch_logits'] if 'patch_logits' in classifier_out_dict else None
-        print(patch_logits.shape)
-        input('sa')
+
         out = {}
         out['value'] = bag_logits
         if patch_logits is not None:

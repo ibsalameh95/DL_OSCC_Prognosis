@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train a CNN to classify image patches')
 
-parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg12/test.txt', help='slide list test', dest='slide_list_filename')
+parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg/test.txt', help='slide list test', dest='slide_list_filename')
 parser.add_argument('--metrics_dir', default='Results/prognosis_model/test_metrics/2024_08_16__18_03_11__66/test', help='Text file to write metrics', dest='metrics_dir')
 
 FLAGS = parser.parse_args()

@@ -14,9 +14,9 @@ parser = argparse.ArgumentParser(description='Train a CNN to classify image patc
 
 parser.add_argument('--init_model_file', default='',help='Initial model file (optional)', dest='init_model_file')
 parser.add_argument('--model_dir', default='Results/prognosis_model/saved_models/', help='Directory to save models', dest='model_dir')
-parser.add_argument('--slide_list_filename_train', default='prognosis_model/data/seg14/train.txt', help='slide list train', dest='slide_list_filename_train')
-parser.add_argument('--slide_list_filename_valid', default='prognosis_model/data/seg14/valid.txt', help='slide list valid', dest='slide_list_filename_valid')
-parser.add_argument('--slide_list_filename_test', default='prognosis_model/data/seg14/test.txt', help='slide list test', dest='slide_list_filename_test')
+parser.add_argument('--slide_list_filename_train', default='prognosis_model/data/seg/train.txt', help='slide list train', dest='slide_list_filename_train')
+parser.add_argument('--slide_list_filename_valid', default='prognosis_model/data/seg/valid.txt', help='slide list valid', dest='slide_list_filename_valid')
+parser.add_argument('--slide_list_filename_test', default='prognosis_model/data/seg/test.txt', help='slide list test', dest='slide_list_filename_test')
 parser.add_argument('--patch_size', default='0', type=int, help='Patch size', dest='patch_size')
 parser.add_argument('--num_instances', default='0', type=int, help='number of instances (patches) in a bag', dest='num_instances')
 parser.add_argument('--num_features', default='64', type=int, help='number of features', dest='num_features')

@@ -98,7 +98,6 @@ def resnet50(pretrained=True, **kwargs):
     children_list.append(nn.AdaptiveAvgPool2d(output_size=(1, 1)))
     model = nn.Sequential(*children_list)
     
-    print(model)
     model.eval()
 
     return model
