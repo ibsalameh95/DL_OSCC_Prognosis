@@ -2,22 +2,21 @@ import argparse
 from datetime import datetime
 import os
 import sys
-
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.utils.data
 import torch.nn.functional as F
-from model import Model
+# from model import Model
+from model.additive_model import get_additive_mil_model
 from tqdm import tqdm
-from dataset import Dataset, custom_collate_fn, worker_init_fn
+from dataset.dataset import Dataset, custom_collate_fn, worker_init_fn
 
 
 parser = argparse.ArgumentParser(description='Train a CNN to classify image patches')
 
-parser.add_argument('--init_model_file', default='Results/prognosis_model/saved_models/model_weights__2024_05_04__14_53_21__65.pth',help='Initial model file (optional)', dest='init_model_file')
-parser.add_argument('--slide_list_filename', default='prognosis_model/Data/seg2/test.txt', help='slide list test', dest='slide_list_filename')
+parser.add_argument('--init_model_file', default='Results/prognosis_model/saved_models/model_weights__2024_08_19__17_31_46__114.pth',help='Initial model file (optional)', dest='init_model_file')
+parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg13/test.txt', help='slide list test', dest='slide_list_filename')
 parser.add_argument('--patch_size', default='512', type=int, help='Patch size', dest='patch_size')
 parser.add_argument('--num_instances', default='0', type=int, help='number of instances (patches) in a bag', dest='num_instances')
 parser.add_argument('--num_bags', default='100', type=int, help='number of instances (patches) in a bag', dest='num_bags')
@@ -25,10 +24,10 @@ parser.add_argument('--num_features', default='64', type=int, help='number of fe
 parser.add_argument('--num_classes', default='2', type=int, help='Number of classes', dest='num_classes')
 parser.add_argument('--batch_size', default='1', type=int, help='Batch size', dest='batch_size')
 parser.add_argument('--metrics_dir', default='Results/prognosis_model/test_metrics/', help='Text file to write metrics', dest='metrics_dir')
-parser.add_argument('--cz_imgs_list', default='prognosis_model/Data/cz_img_list.txt', help='Image directory', dest='cz_imgs_list')
-parser.add_argument('--he_imgs_list', default='prognosis_model/Data/he_img_list.txt', help='Image directory', dest='he_imgs_list')
+parser.add_argument('--cz_imgs_list', default='prognosis_model/data/cz_img_list.txt', help='Image directory', dest='cz_imgs_list')
+parser.add_argument('--he_imgs_list', default='prognosis_model/data/he_img_list.txt', help='Image directory', dest='he_imgs_list')
 parser.add_argument('--seg_imgs_list', default='prognosis_model/Data/seg_img_list.txt', help='Image directory', dest='seg_imgs_list')
-parser.add_argument('--imgs_type', default='HE', help='Image directory', dest='imgs_type')
+parser.add_argument('--imgs_type', default='CZ_HE', help='Image directory', dest='imgs_type')
 
 FLAGS = parser.parse_args()
     
@@ -50,20 +49,28 @@ print('batch_size: {}'.format(FLAGS.batch_size))
 print('metrics_dir: {}'.format(FLAGS.metrics_dir))
 
 
-device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+
+device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
 
 # get the model using helper function
-model = Model(num_classes=FLAGS.num_classes, features_size=1024, num_features=FLAGS.num_features, requires_grad= False)
+# model = Model(num_classes=FLAGS.num_classes, features_size=1024, num_features=FLAGS.num_features, requires_grad= False)
+model = get_additive_mil_model(num_classes=FLAGS.num_classes, features_size=1024, num_features=FLAGS.num_features, requires_grad= False)
+
 # move model to the right device
 model.to(device)
 
+def load_torch_model(model, weights):
+    state_dict = torch.load(weights, map_location=torch.device(device))
+    state_dict = state_dict['model_state_dict']
+    # print(state_dict['model_state_dict'])
+    # input('s')
+    print(model.load_state_dict(state_dict))
+    print("Model loading complete ...")
+
 if FLAGS.init_model_file:
     if os.path.isfile(FLAGS.init_model_file):
-
-        state_dict = torch.load(FLAGS.init_model_file, map_location=torch.device(device))
         
-        model.load_state_dict(state_dict['model_state_dict'])
-
+        load_torch_model(model, FLAGS.init_model_file)
         print("Model weights loaded successfully from file: ", FLAGS.init_model_file)
     else:
         raise Exception("Given model weights file cannot be found!")
@@ -88,7 +95,7 @@ with torch.no_grad():
         slide_label = labels[s]
 
         # dataset for the current slide
-        dataset = Dataset(slide_list_filename= FLAGS.slide_list_filename, slide_id=slide_id, cz_imgs_list= FLAGS.cz_imgs_list, he_imgs_list= FLAGS.he_imgs_list, seg_imgs_list= FLAGS.seg_imgs_list, imgs_type= FLAGS.imgs_type)
+        dataset = Dataset(slide_list_filename= FLAGS.slide_list_filename, slide_id=slide_id, cz_imgs_list= FLAGS.cz_imgs_list, he_imgs_list= FLAGS.he_imgs_list, imgs_type= FLAGS.imgs_type)
 
         # define data loader
         data_loader = torch.utils.data.DataLoader(dataset, batch_size=FLAGS.batch_size, shuffle=False, num_workers=1, collate_fn=custom_collate_fn, worker_init_fn=worker_init_fn)
@@ -116,7 +123,7 @@ with torch.no_grad():
 
         #     continue
 
-
+        torch.set_printoptions(profile="full")
         bag_count = 0
         pbar = tqdm(total=len(data_loader))
         for img, lable, cz_img_paths, he_img_paths in data_loader:
@@ -125,7 +132,11 @@ with torch.no_grad():
             img = img.to(device)
             # get logits from the model
             output = model(img)
-
+            
+            # print(output['value'])
+            # print(output['patch_logits'])
+            # input('ds')
+            output = output['value']
             # obtain probs
             probs = F.softmax(output, dim=1)
 

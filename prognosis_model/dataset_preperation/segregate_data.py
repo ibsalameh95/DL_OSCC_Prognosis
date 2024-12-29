@@ -5,7 +5,7 @@ import random
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--wsi_filelist', type=str, default='segmentation_model/Data/all.txt', help='The name of file containing the WSI Ids.')
+parser.add_argument('--wsi_filelist', type=str, default='segmentation_model/data/all.txt', help='The name of file containing the WSI Ids.')
 FLAGS = parser.parse_args()
 
 random.seed(42)

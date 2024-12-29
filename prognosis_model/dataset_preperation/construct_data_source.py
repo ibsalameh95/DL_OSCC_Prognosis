@@ -1,25 +1,21 @@
 import numpy as np    
+import os 
 
+with open('prognosis_model/data/cz_imgs_list.txt', 'w') as all:
+    all.write('# slide_id\timg_id\tlabel\tpath\n')
 
-with open('prognosis_model/Data/all.txt', 'w') as all:
-    all.write('# slide_id\tlabel\n')
+base_dir = 'Data/CroppedRegions/WholeImageCrops/Confocal'
 
-data_arr = np.loadtxt('prognosis_model/Data/czi_filelist', delimiter='\t', comments='#', dtype=str)
+data_arr = np.loadtxt('prognosis_model/data/all.txt', delimiter='\t', comments='#', dtype=str)
 
-slide_ids = []
-labels = []
-for line in data_arr:
-    slide_id = line.split('/')[-1].split('.')[0]
-    label = line.split('/')[-2]
+slide_ids = data_arr[:,0]
+labels = data_arr[:,1]
 
-    slide_ids.append(slide_id)
+for idx, slide in enumerate(slide_ids):
+    imgs_dir = os.path.join(base_dir, slide)
 
-    if label == 'GoodProg':
-        label = 0
-        labels.append(0)
-    if label == 'PoorProg':
-        label = 1
-        labels.append(1)
+    imgs = os.listdir(imgs_dir)
 
-    with open('prognosis_model/Data/all.txt', 'a') as all:
-        all.write(slide_id + '\t' + str(label) + '\n')
+    for i, img_path in enumerate(imgs):
+        with open('prognosis_model/data/cz_imgs_list.txt', 'a') as all:
+            all.write(slide + '\t' + str(i) + '\t' + str(labels[idx]) + '\t' + os.path.join(imgs_dir, img_path) + '\n')

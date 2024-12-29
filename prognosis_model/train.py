@@ -6,17 +6,17 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.utils.data
-from model import Model
-from dataset_train import Dataset, custom_collate_fn, worker_init_fn
+from model.additive_model import get_additive_mil_model
+from dataset.dataset_train import Dataset, custom_collate_fn, worker_init_fn
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Train a CNN to classify image patches')
 
 parser.add_argument('--init_model_file', default='',help='Initial model file (optional)', dest='init_model_file')
 parser.add_argument('--model_dir', default='Results/prognosis_model/saved_models/', help='Directory to save models', dest='model_dir')
-parser.add_argument('--slide_list_filename_train', default='prognosis_model/Data/seg2/train.txt', help='slide list train', dest='slide_list_filename_train')
-parser.add_argument('--slide_list_filename_valid', default='prognosis_model/Data/seg2/valid.txt', help='slide list valid', dest='slide_list_filename_valid')
-parser.add_argument('--slide_list_filename_test', default='prognosis_model/Data/seg2/test.txt', help='slide list test', dest='slide_list_filename_test')
+parser.add_argument('--slide_list_filename_train', default='prognosis_model/data/seg14/train.txt', help='slide list train', dest='slide_list_filename_train')
+parser.add_argument('--slide_list_filename_valid', default='prognosis_model/data/seg14/valid.txt', help='slide list valid', dest='slide_list_filename_valid')
+parser.add_argument('--slide_list_filename_test', default='prognosis_model/data/seg14/test.txt', help='slide list test', dest='slide_list_filename_test')
 parser.add_argument('--patch_size', default='0', type=int, help='Patch size', dest='patch_size')
 parser.add_argument('--num_instances', default='0', type=int, help='number of instances (patches) in a bag', dest='num_instances')
 parser.add_argument('--num_features', default='64', type=int, help='number of features', dest='num_features')
@@ -29,9 +29,8 @@ parser.add_argument('--num_epochs', default=500, type=int, help='Number of epoch
 parser.add_argument('--save_interval', default=100, type=int, help='Model save interval (default: 1000)', dest='save_interval')
 parser.add_argument('--metrics_dir', default='Results/prognosis_model/metrics/', help='Text file to write step, loss, accuracy metrics', dest='metrics_dir')
 parser.add_argument('--validation_dir', default='Results/prognosis_model/validation/', help='Text file to write step, loss, accuracy metrics', dest='validation_dir')
-parser.add_argument('--cz_imgs_list', default='prognosis_model/Data/cz_img_list.txt', help='Image directory', dest='cz_imgs_list')
-parser.add_argument('--he_imgs_list', default='prognosis_model/Data/he_img_list.txt', help='Image directory', dest='he_imgs_list')
-parser.add_argument('--seg_imgs_list', default='prognosis_model/Data/seg_img_list.txt', help='Image directory', dest='seg_imgs_list')
+parser.add_argument('--cz_imgs_list', default='prognosis_model/data/cz_img_list.txt', help='Image directory', dest='cz_imgs_list')
+parser.add_argument('--he_imgs_list', default='prognosis_model/data/he_img_list.txt', help='Image directory', dest='he_imgs_list')
 parser.add_argument('--imgs_type', default='CZ_HE', help='Image directory', dest='imgs_type')
 parser.add_argument('--device_num', default='0', type=int, help='Batch size', dest='device_num')
 
@@ -73,11 +72,11 @@ print('metrics_dir: {}'.format(FLAGS.metrics_dir))
 print('metrics_file: {}'.format(metrics_file)) 
 
 
-train_dataset = Dataset(slide_list_filename=FLAGS.slide_list_filename_train, cz_imgs_list= FLAGS.cz_imgs_list, he_imgs_list= FLAGS.he_imgs_list, seg_imgs_list= FLAGS.seg_imgs_list, dataset_type= 'train', imgs_type= FLAGS.imgs_type)
+train_dataset = Dataset(slide_list_filename=FLAGS.slide_list_filename_train, cz_imgs_list= FLAGS.cz_imgs_list, he_imgs_list= FLAGS.he_imgs_list, dataset_type= 'train', imgs_type= FLAGS.imgs_type)
 num_slides_train = train_dataset.num_slides
 print("Training Data - num_slides: {}".format(train_dataset.num_slides))
 
-valid_dataset = Dataset(slide_list_filename=FLAGS.slide_list_filename_valid, cz_imgs_list= FLAGS.cz_imgs_list, he_imgs_list= FLAGS.he_imgs_list, seg_imgs_list= FLAGS.seg_imgs_list, dataset_type= 'valid', imgs_type= FLAGS.imgs_type)
+valid_dataset = Dataset(slide_list_filename=FLAGS.slide_list_filename_valid, cz_imgs_list= FLAGS.cz_imgs_list, he_imgs_list= FLAGS.he_imgs_list, dataset_type= 'valid', imgs_type= FLAGS.imgs_type)
 num_slides_valid = valid_dataset.num_slides
 print("Validation Data - num_slides: {}".format(valid_dataset.num_slides))
 
@@ -88,7 +87,9 @@ data_loader_valid = torch.utils.data.DataLoader(valid_dataset, batch_size=FLAGS.
 device = torch.device('cuda:{}'.format(FLAGS.device_num)) if torch.cuda.is_available() else torch.device('cpu')
 
 # get the model using helper function
-model = Model(num_classes=FLAGS.num_classes, features_size=1024, num_features=FLAGS.num_features, device_num= FLAGS.device_num, requires_grad= False)
+model = get_additive_mil_model(num_classes=FLAGS.num_classes, features_size=1024, num_features=FLAGS.num_features, device_num= FLAGS.device_num, requires_grad= False)
+
+#Model(num_classes=FLAGS.num_classes, features_size=1024, num_features=FLAGS.num_features, device_num= FLAGS.device_num, requires_grad= False)
 
 # move model to the right device
 model.to(device)
@@ -162,6 +163,8 @@ for epoch in range(FLAGS.num_epochs):
         img, label = img.to(device), label.to(device)
         output = model(img)
 
+        output = output['value']
+
         optimizer.zero_grad()
         loss = criterion(output, label)
         loss.backward()
@@ -206,6 +209,8 @@ for epoch in range(FLAGS.num_epochs):
                         
             img, label = img.to(device), label.to(device)
             output = model(img)
+
+            output = output['value']
             
             loss = criterion(output, label)
 

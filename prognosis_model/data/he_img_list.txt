@@ -1440,9 +1440,7 @@ MYD1TTF3	9	1	Data/CroppedRegions/512/Brightfield/MYD1TTF3/MYD1TTF3-9.png
 9GA9I5R1	9	1	Data/CroppedRegions/512/Brightfield/9GA9I5R1/9GA9I5R1-9.png
 9GA9I5R1	10	1	Data/CroppedRegions/512/Brightfield/9GA9I5R1/9GA9I5R1-10.png
 01V41J3U	2	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-2.png
-01V41J3U	3	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-3.png
 01V41J3U	4	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-4.png
-01V41J3U	5	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-5.png
 01V41J3U	6	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-6.png
 01V41J3U	7	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-7.png
 01V41J3U	8	1	Data/CroppedRegions/512/Brightfield/01V41J3U/01V41J3U-8.png

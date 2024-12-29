@@ -5,9 +5,10 @@ from sklearn.metrics import confusion_matrix
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import math 
+import os 
 
 parser = argparse.ArgumentParser(description='Plot the loss vs iteration and accuracy vs iteration for given data file')
-parser.add_argument('--data_file', default='Results/prognosis_model/test_metrics/2024_05_04__14_53_15__147/test/slide_scores.txt', help='Data file path', dest='data_file')
+parser.add_argument('--data_file', default='Results/Results/prognosis_model/validation/validation_results____2024_08_16__18_03_32_56.txt', help='Data file path', dest='data_file')
 
 FLAGS = parser.parse_args()
 
@@ -77,12 +78,12 @@ def plot_confusion_matrix(cm, classes,
         # plot confusion matrix:
 def plot_cm(results, out_dir, title, class_names):
 
-        # label_index_arr = np.asarray(results[:,2],dtype=str)
-        # pred_arr = np.asarray(results[:,3],dtype=str)
+        label_index_arr = np.asarray(results[:,2],dtype=str)
+        pred_arr = np.asarray(results[:,3],dtype=str)
 
-        label_index_arr = np.asarray(results[:,1],dtype=int)
-        pred_arr_scores = np.asarray(results[:,2],dtype=float)
-        pred_arr = [0 if sc < 0.5 else 1 for sc in pred_arr_scores]
+        # label_index_arr = np.asarray(results[:,1],dtype=int)
+        # pred_arr_scores = np.asarray(results[:,2],dtype=float)
+        # pred_arr = [0 if sc < 0.5 else 1 for sc in pred_arr_scores]
 
         conf_mat = confusion_matrix(label_index_arr, pred_arr)
 
@@ -95,11 +96,32 @@ def plot_cm(results, out_dir, title, class_names):
         
         plt.tight_layout()
         plt.savefig(out_dir, dpi=300)
+        fig.clear()
 
 
 data_arr = np.loadtxt(FLAGS.data_file, dtype='str', comments='#', delimiter='\t')
+
 out_file = '{}__confusion_mtx.png'.format(FLAGS.data_file[:-4])
 title = None
 class_names = ['Good Prog', 'Poor Prog']
 
 plot_cm(data_arr, out_file, None, class_names)
+            
+
+# for root, dirs, files in os.walk('Results/prognosis_model/test_metrics/'):
+#     for file in files: 
+#         if file == 'slide_scores.txt': 
+            
+#             print(os.path.join(root, file)[:-4])
+#             data_arr = np.loadtxt(os.path.join(root, file), dtype='str', comments='#', delimiter='\t')
+
+#             out_file = '{}__confusion_mtx.png'.format(os.path.join(root, file)[:-4])
+#             title = None
+#             class_names = ['Good Prog', 'Poor Prog']
+
+#             plot_cm(data_arr, out_file, None, class_names)
+            
+
+
+
+

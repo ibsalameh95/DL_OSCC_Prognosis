@@ -9,15 +9,13 @@ import torch
 import torch.nn as nn
 import torch.utils.data
 import torch.nn.functional as F
-
-from model import Model
 from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser(description='Train a CNN to classify image patches')
 
-parser.add_argument('--slide_list_filename', default='prognosis_model/Data/seg2/test.txt', help='slide list test', dest='slide_list_filename')
-parser.add_argument('--metrics_dir', default='Results/prognosis_model/test_metrics/2024_04_28__14_21_37__107_HE_2/test/slide_scores.txt', help='Text file to write metrics', dest='metrics_dir')
+parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg13/test.txt', help='slide list test', dest='slide_list_filename')
+parser.add_argument('--metrics_dir', default='Results/prognosis_model/test_metrics/2024_08_19__17_31_46__369/test', help='Text file to write metrics', dest='metrics_dir')
 
 FLAGS = parser.parse_args()
 
@@ -42,8 +40,9 @@ with open(out_file, 'w') as f_out_file:
         # slide_id\tbag_id\tslide_label\tprediction\tscore_negative\tscore_positive\n
         metrics_file = '{}/test_scores__{}.txt'.format(FLAGS.metrics_dir,slide_id)
         
-        data = np.loadtxt(metrics_file, delimiter='\t', comments='#', dtype=str).reshape((1,-1))
-        score_pos_arr = np.asarray(data[:,-1], dtype=float)
+        data = np.loadtxt(metrics_file, delimiter='\t', comments='#', dtype=str)[-1].reshape((1,-1))
+        
+        score_pos_arr = np.asarray(data[:,-3], dtype=float)
 
         slide_score_pos = np.amax(score_pos_arr)
 
