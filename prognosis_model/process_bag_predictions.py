@@ -12,7 +12,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 
-parser = argparse.ArgumentParser(description='Train a CNN to classify image patches')
+parser = argparse.ArgumentParser(description='Process bag predictions and generate scores')
 
 parser.add_argument('--slide_list_filename', default='prognosis_model/data/seg/test.txt', help='slide list test', dest='slide_list_filename')
 parser.add_argument('--metrics_dir', default='Results/prognosis_model/test_metrics/2024_08_19__17_31_46__369/test', help='Text file to write metrics', dest='metrics_dir')
