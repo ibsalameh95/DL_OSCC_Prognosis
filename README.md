@@ -31,10 +31,10 @@ pip install -r requirements.txt
 
 Please download the data from [Multiple Instance Learning for Early Recurrence Prediction in Oral Squamous Cell Carcinoma](https://zenodo.org/records/10658626) and move the downloaded folders into the following directory:
 
-This dataset is the final version of the processed patches to be used for the model training and testing. More info about the dataset could be found in the dataset description.
 ```
 project_path/Data/CroppedRegions
 ```
+This dataset is the final version of the processed patches to be used for the model training and testing. More info about the dataset could be found in the dataset description.
 
 ## Train and Test Prognosis Model
 
