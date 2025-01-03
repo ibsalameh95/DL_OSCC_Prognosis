@@ -120,7 +120,7 @@ Below is a list of the command-line arguments used for ROC curve generation:
 
 ## **License**
 
-Multiple Instance Learning for Early Recurrence Prediction in Oral Squamous Cell Carcinoma (MILP) is released under the MIT License. See the **[LICENSE](https://www.blackbox.ai/share/LICENSE)** file for details.
+Multiple Instance Learning for Early Recurrence Prediction in Oral Squamous Cell Carcinoma (MILP) is released under the MIT License. See the **[LICENSE](https://github.com/ibsalameh95/DL_OSCC_Prognosis?tab=MIT-1-ov-file)** file for details.
 
 ## **Authors and Acknowledgment**
 
